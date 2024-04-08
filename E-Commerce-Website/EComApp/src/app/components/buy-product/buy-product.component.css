@@ -1,0 +1,43 @@
+.mat-form-field {
+    width: 100%;
+    margin-top: 1em;
+}
+.mat-card-content {
+    margin-top: 2em;
+}
+::ng-deep .mat-form-field-wrapper {
+    margin-bottom: 0em;
+    padding-bottom: 0em;
+}
+/* .container {
+    margin-top: 2em;
+}
+.table {
+    width: 100%;
+    margin-top: 1em;
+}  */
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 20px;
+}
+
+.form-container, .table-container {
+    padding: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    text-align: left;
+}

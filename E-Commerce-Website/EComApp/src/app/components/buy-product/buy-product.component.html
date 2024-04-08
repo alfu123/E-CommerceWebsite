@@ -1,0 +1,157 @@
+<!-- <div class="container mt-5">
+    <div class="card p-3">
+        <div class="row">
+            <div class="col-6">
+
+                <form #orderForm="ngForm"
+                      (ngSubmit)="placeOrder(orderForm)">
+
+                    <mat-form-field appearance="outline"
+                                    class="w-100">
+                        <mat-label>Full name</mat-label>
+                        <input matInput
+                               placeholder="Full name"
+                               [(ngModel)]="orderDetails.fullName"
+                               name="fullName">
+                    </mat-form-field>
+                <br>
+                    <mat-form-field appearance="outline"
+                                    class="w-100">
+                        <mat-label>Full address</mat-label>
+                        <input matInput
+                               placeholder="Full address"
+                               [(ngModel)]="orderDetails.fullAddress"
+                               name="fullAddress">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline"
+                                    class="w-100">
+                        <mat-label>Contact number</mat-label>
+                        <input matInput
+                               placeholder="Contact number"
+                               [(ngModel)]="orderDetails.contactNumber"
+                               name="contactNumber">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline"
+                                    class="w-100">
+                        <mat-label>Alternate contact number</mat-label>
+                        <input matInput
+                               placeholder="Alternate contact number"
+                               [(ngModel)]="orderDetails.alternateContactNumber"
+                               name="alternateContactNumber">
+                    </mat-form-field>
+
+                    <div align="right">
+                        <button type="submit" mat-stroked-button color="primary">Place Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+ -->
+
+
+<div class="container">
+    <div class="form-container">
+        <!-- Loading Product Spinner -->
+        <div fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="showProductSpinner">
+            <mat-spinner diameter="50" class="product-spinner"></mat-spinner>
+        </div>
+
+        <mat-card class="example-card">
+            <div fxLayout="row wrap" fxLayoutAlign="center center" fxFlexFill>
+                <div fxFlex="80">
+                    <!-- Card Title -->
+                    <mat-card-title align="center">User Address</mat-card-title>
+                    <!-- User Form -->
+                    <form #orderForm="ngForm" (ngSubmit)="placeOrder(orderForm)">
+                        <!-- Card Content -->
+                        <mat-card-content>
+                            <!-- Name Field -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Full name</mat-label>
+                                <input matInput placeholder="Full name" [(ngModel)]="orderDetails.fullName"
+                                    name="fullName">
+                            </mat-form-field>
+                            <!-- Address Field -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Full Address</mat-label>
+                                <input matInput placeholder="Full Address" [(ngModel)]="orderDetails.fullAddress"
+                                    name="fullAddress">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Contact number</mat-label>
+                                <input matInput placeholder="Contact number" [(ngModel)]="orderDetails.contactNumber"
+                                    name="contactNumber">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Alternate contact number</mat-label>
+                                <input matInput placeholder="Alternate contact number"
+                                    [(ngModel)]="orderDetails.alternateContactNumber" name="alternateContactNumber">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Pincode</mat-label>
+                                <input matInput placeholder="Enter Your Pincode"
+                                    [(ngModel)]="orderDetails.pincode" name="pincode">
+                            </mat-form-field>
+                            <div align="right">
+                                <button type="submit" mat-stroked-button color="primary">Place
+                                    Order</button>
+                            </div>
+                        </mat-card-content>
+                    </form>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+    <div class="table-container">
+        <mat-card class="example-card">
+            <div fxLayout="row wrap" fxLayoutAlign="center center" fxFlexFill>
+                <div fxFlex="80">
+                    <!-- Card Title -->
+                    <mat-card-title align="center">Order Summary</mat-card-title>
+                    <mat-card-content>
+                        <table class="table">
+                            <thead class="thead">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Amount</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody">
+                                <tr *ngFor="let product of productDetails">
+                                    <td>{{product.pname}}</td>
+                                    <td>{{product.price}}</td>
+                                    <td>
+                                        <select #quantity 
+                                            [ngModel]="getQuantityForProduct(product.pid)"
+                                            (change)="onQuantityChanged(+quantity.value, product.pid )">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        {{getCalculatedTotal(product.pid, product.price)}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Total</td>
+                                    <td> {{getCalculatedGrandTotal()}} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>

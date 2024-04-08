@@ -1,0 +1,75 @@
+<div class="main-div" fxLayout="row wrap" fxLayoutAlign="center">
+    <div fxFlex="50" fxFlex.sm="100" fxFlex.xs="100">
+        <!-- Table Nav Links-->
+        <nav mat-tab-nav-bar mat-align-tabs="center center">
+            <a mat-tab-link *ngFor="let link of navLinks" [routerLink]="link.path" routerLinkActive
+                #rla="routerLinkActive" [active]="rla.isActive">
+                {{link.label}} </a>
+        </nav>
+        <!-- Tab Panel -->
+        <mat-tab-nav-panel #tabPanel>
+
+            <mat-card>
+                <div fxLayout="row wrap" fxLayoutAlign="center center" fxFlexFill>
+                    <div fxFlex="80">
+                        <!-- Card Title -->
+                        <mat-card-title align="center">User Login</mat-card-title>
+                        <!-- User Form -->
+                        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                            <!-- Card Content -->
+                            <mat-card-content>
+                                <!-- Username Field -->
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Username</mat-label>
+                                    <input matInput formControlName="userName" [type]="'text'"
+                                        placeholder="Enter Your Username"
+                                        (keydown)="loginError['userName'] = ''; (loginForm.controls['userName'].value ? loginForm.controls['userName'].setErrors(null) : '');">
+                                </mat-form-field>
+                                <!-- Username Error Field -->
+                                <div>
+                                    <span
+                                        *ngIf="loginForm.controls['userName'].errors?.['required'] && (loginForm.controls['userName'].touched || loginForm.controls['userName'].dirty)"
+                                        class="alert">This Field Cannot Be Empty!</span>
+                                    <span
+                                        *ngIf="loginForm.controls['userName'].errors?.['pattern'] && (loginForm.controls['userName'].touched || loginForm.controls['userName'].dirty)"
+                                        class="alert">Only Alphanumeric characters are allowed!</span>
+                                    <span
+                                        *ngIf=" loginError['userName'] && (loginForm.controls['userName'].touched || loginForm.controls['userName'].dirty)"
+                                        class="alert">{{ loginError['userName'] }}</span>
+                                </div>
+                                <!-- Password Field -->
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Password</mat-label>
+                                    <input matInput formControlName="userPassword"
+                                        [type]="hidePassword ? 'userPassword' : 'text'" placeholder="Enter Your Password"
+                                        (keydown)="loginError['userPassword'] = ''; (loginForm.controls['userPassword'].value ? loginForm.controls['userPassword'].setErrors(null) : '');">
+                                    <!-- Button to show/hide password -->
+                                    <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+                                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+                                        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                    </button>
+                                </mat-form-field>
+                                <!-- Password Error Field -->
+                                <div>
+                                    <span
+                                        *ngIf="loginForm.controls['userPassword'].errors?.['required'] && (loginForm.controls['userPassword'].touched ||loginForm.controls['userPassword'].dirty ) "
+                                        class="alert">This Field Cannot Be Empty!</span>
+                                    <span
+                                        *ngIf=" loginError['userPassword'] && (loginForm.controls['userPassword'].touched || loginForm.controls['userPassword'].dirty)"
+                                        class="alert">{{ loginError['userPassword'] }}</span>
+                                </div>
+                            </mat-card-content>
+                            <mat-card-actions align="end">
+                                <button mat-raised-button color="primary">Login
+                                </button>
+                                <!-- Show Spinner While Fetching Login Response from API -->
+                                <mat-spinner *ngIf="showLoginSpinner" diameter="30" color="accent"></mat-spinner>
+                            </mat-card-actions>
+                        </form>
+                    </div>
+                </div>
+            </mat-card>
+
+        </mat-tab-nav-panel>
+    </div>
+</div>
