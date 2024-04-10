@@ -10,11 +10,12 @@ import { UserApiService } from 'src/app/shared/services/api/user-api.service';
     styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit, OnDestroy {
-    subscription: Subscription = Subscription.EMPTY;
+    // subscription: Subscription = Subscription.EMPTY;
+    subscriptions: Subscription[]=[];
     hidePassword = true;
     hideConfirmPassword = true;
     signupForm: FormGroup;
-    signupError: any = { username: '', password: '', confirmPassword: '' };
+    signupError: any = { userName: '', userPassword: '', confirmPassword: '' };
     showSignupSpinner: boolean = false;
 
     navLinks = [
@@ -25,9 +26,10 @@ export class SignupComponent implements OnInit, OnDestroy {
     constructor(private fb: FormBuilder, private userApiService: UserApiService, private router: Router) {
         // Create new Signup Form
         this.signupForm = this.fb.group({
-            uname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
-            username: ['', [Validators.required, Validators.pattern(/^\w+$/)]],
-            password: ['', Validators.required],
+            userName: ['', [Validators.required, Validators.pattern(/^\w+$/)]],
+            userFirstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
+            userLastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
+            userPassword: ['', Validators.required],
             confirmPassword: ['', Validators.required]
         });
     }
@@ -40,12 +42,13 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        // this.subscription.unsubscribe();
+        this.subscriptions.forEach((subscription) => { subscription.unsubscribe() });
     }
 
     // Method to match password & confirm Password
     matchPassword(value: string) {
-        const password = this.signupForm.controls['password'].value;
+        const password = this.signupForm.controls['userPassword'].value;
         if (password === value) {
             this.signupError['confirmPassword'] = '';
             this.signupForm.controls['confirmPassword'].setErrors(null);
@@ -68,15 +71,16 @@ export class SignupComponent implements OnInit, OnDestroy {
         let formValue = this.signupForm.value;
         // Delete Confirm Password field from signup form
         delete formValue['confirmPassword'];
+        console.log(this.signupForm.value);
         // Show Signup Spinner
         this.showSignupSpinner = true;
 
-        this.subscription = this.userApiService.signupUser(formValue).subscribe({
+        this.subscriptions.push(this.userApiService.signupUser(this.signupForm.value).subscribe({
             next: (resp) => {
                 if (resp) {
                     if (resp.status === 'success' && resp.status_code == 201) {
                         // User Registration Successfull
-                        this.router.navigate(['../auth/login']);
+                        this.router.navigate(['/login']);
                     } else if (resp.status == 'error' && resp.status_code == 409 && resp.error) {
                         this.signupError[resp.error.error_field] = resp.error.message;
                         this.signupForm.controls[resp.error.error_field].setErrors({ invalid: true });
@@ -96,5 +100,6 @@ export class SignupComponent implements OnInit, OnDestroy {
                 this.showSignupSpinner = false;
             }
         })
+    )
     }
 }

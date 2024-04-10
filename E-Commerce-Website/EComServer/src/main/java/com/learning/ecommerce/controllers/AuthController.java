@@ -28,6 +28,7 @@ public class AuthController {
 
 	@PostMapping({"/signup"})
 	public ResponseEntity<String> registerNewUser(@RequestBody UserDto userDto) {
+		System.out.println("alghd");
 		return authService.registerNewUser(userDto);
 	}
 

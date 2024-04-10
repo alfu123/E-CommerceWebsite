@@ -18,46 +18,65 @@
                         <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
                             <!-- Card Content -->
                             <mat-card-content>
-                                <!-- Name Field -->
-                                <mat-form-field appearance="outline">
-                                    <mat-label>Full Name</mat-label>
-                                    <input matInput formControlName="uname" [type]="'text'"
-                                        placeholder="Enter Your Name">
-                                </mat-form-field>
-                                <!-- Name Error Field -->
-                                <div>
-                                    <span
-                                        *ngIf="signupForm.controls['uname'].errors?.['required'] && (signupForm.controls['uname'].touched || signupForm.controls['uname'].dirty)"
-                                        class="alert">This Field Cannot Be Empty!</span>
-                                    <span
-                                        *ngIf="signupForm.controls['uname'].errors?.['pattern'] && (signupForm.controls['uname'].touched || signupForm.controls['uname'].dirty)"
-                                        class="alert">Only Alphabetic Characters are Allowed!</span>
-                                </div>
+
                                 <!-- Username Field -->
                                 <mat-form-field appearance="outline">
                                     <mat-label>Username</mat-label>
-                                    <input matInput formControlName="username" [type]="'text'"
+                                    <input matInput formControlName="userName" [type]="'text'"
                                         placeholder="Enter Your Username"
-                                        (keydown)="signupError['username'] = ''; (signupForm.controls['username'].value ? signupForm.controls['username'].setErrors(null) : '');">
+                                        (keydown)="signupError['userName'] = ''; (signupForm.controls['userName'].value ? signupForm.controls['userName'].setErrors(null) : '');">
                                 </mat-form-field>
                                 <!-- Username Error Field -->
                                 <div>
                                     <span
-                                        *ngIf="signupForm.controls['username'].errors?.['required'] && (signupForm.controls['username'].touched || signupForm.controls['username'].dirty)"
+                                        *ngIf="signupForm.controls['userName'].errors?.['required'] && (signupForm.controls['userName'].touched || signupForm.controls['userName'].dirty)"
                                         class="alert">This Field Cannot Be Empty!</span>
                                     <span
-                                        *ngIf="signupForm.controls['username'].errors?.['pattern'] && (signupForm.controls['username'].touched || signupForm.controls['username'].dirty)"
+                                        *ngIf="signupForm.controls['userName'].errors?.['pattern'] && (signupForm.controls['userName'].touched || signupForm.controls['userName'].dirty)"
                                         class="alert">Only Alphanumeric characters are allowed!</span>
                                     <span
-                                        *ngIf=" signupError['username'] && (signupForm.controls['username'].touched || signupForm.controls['username'].dirty)"
-                                        class="alert">{{ signupError['username'] }}</span>
+                                        *ngIf=" signupError['userName'] && (signupForm.controls['userName'].touched || signupForm.controls['userName'].dirty)"
+                                        class="alert">{{ signupError['userName'] }}</span>
                                 </div>
+
+                                <!-- First Name Field -->
+                                <mat-form-field appearance="outline">
+                                    <mat-label>First Name</mat-label>
+                                    <input matInput formControlName="userFirstName" [type]="'text'"
+                                        placeholder="Enter Your First Name">
+                                </mat-form-field>
+                                <!-- Name Error Field -->
+                                <div>
+                                    <span
+                                        *ngIf="signupForm.controls['userFirstName'].errors?.['required'] && (signupForm.controls['userFirstName'].touched || signupForm.controls['userFirstName'].dirty)"
+                                        class="alert">This Field Cannot Be Empty!</span>
+                                    <span
+                                        *ngIf="signupForm.controls['userFirstName'].errors?.['pattern'] && (signupForm.controls['userFirstName'].touched || signupForm.controls['userFirstName'].dirty)"
+                                        class="alert">Only Alphabetic Characters are Allowed!</span>
+                                </div>
+                                <!-- Last Name Field -->
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Last Name</mat-label>
+                                    <input matInput formControlName="userLastName" [type]="'text'"
+                                        placeholder="Enter Your last Name">
+                                </mat-form-field>
+                                <!-- Name Error Field -->
+                                <div>
+                                    <span
+                                        *ngIf="signupForm.controls['userLastName'].errors?.['required'] && (signupForm.controls['userLastName'].touched || signupForm.controls['userLastName'].dirty)"
+                                        class="alert">This Field Cannot Be Empty!</span>
+                                    <span
+                                        *ngIf="signupForm.controls['userLastName'].errors?.['pattern'] && (signupForm.controls['userLastName'].touched || signupForm.controls['userLastName'].dirty)"
+                                        class="alert">Only Alphabetic Characters are Allowed!</span>
+                                </div>
+
+                                
                                 <!-- Password Field -->
                                 <mat-form-field appearance="outline">
                                     <mat-label>Password</mat-label>
-                                    <input matInput formControlName="password"
-                                        [type]="hidePassword ? 'password' : 'text'" placeholder="Enter Your Password"
-                                        (keydown)="signupError['password'] = ''; (signupForm.controls['password'].value ? signupForm.controls['password'].setErrors(null) : '');"
+                                    <input matInput formControlName="userPassword"
+                                        [type]="hidePassword ? 'userPassword' : 'text'" placeholder="Enter Your Password"
+                                        (keydown)="signupError['userPassword'] = ''; (signupForm.controls['userPassword'].value ? signupForm.controls['userPassword'].setErrors(null) : '');"
                                         (keyup)="matchPassword(confirm_password.value)">
                                     <!-- Button to show/hide password -->
                                     <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
@@ -68,11 +87,11 @@
                                 <!-- Password Error Field -->
                                 <div>
                                     <span
-                                        *ngIf="signupForm.controls['password'].errors?.['required'] && (signupForm.controls['password'].touched ||signupForm.controls['password'].dirty ) "
+                                        *ngIf="signupForm.controls['userPassword'].errors?.['required'] && (signupForm.controls['userPassword'].touched ||signupForm.controls['userPassword'].dirty ) "
                                         class="alert">This Field Cannot Be Empty!</span>
                                     <span
-                                        *ngIf=" signupError['password'] && (signupForm.controls['password'].touched || signupForm.controls['password'].dirty)"
-                                        class="alert">{{ signupError['password'] }}</span>
+                                        *ngIf=" signupError['userPassword'] && (signupForm.controls['userPassword'].touched || signupForm.controls['userPassword'].dirty)"
+                                        class="alert">{{ signupError['userPassword'] }}</span>
                                 </div>
                                 <!-- Confirm Password Field -->
                                 <mat-form-field appearance="outline">

@@ -20,7 +20,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.learning.ecommerce.dao.UserDao;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +33,9 @@ public class AuthService {
 	ObjectMapper objMapper = new ObjectMapper();
 	JsonNode errorNode = objMapper.createObjectNode();
 	JsonNode dataNode = objMapper.createObjectNode();
+
+//	@PersistenceContext
+//	private EntityManager entityManager;
 
 	@Autowired
 	private UserDao userDao;
@@ -89,6 +95,7 @@ public class AuthService {
 // 		 Check if user with username does not exists in database
 		if (user == null) {
 			Role role = roleDao.findById(2).get();
+//			role = entityManager.merge(role);
 			Set<RoleDto> userRoles = new HashSet<>();
 			userRoles.add(roleDtoConverter.convertEntityToDto(role));
 			userDto.setRole(userRoles);
@@ -96,22 +103,15 @@ public class AuthService {
 
 			user=userDao.save(userDtoConverter.convertDtoToEntity(userDto));
 //			If User is saved Successfully
-			if (user != null) {
-
-				dataNode = objMapper.valueToTree(userDtoConverter.convertEntityToDto(user));
+            dataNode = objMapper.valueToTree(userDtoConverter.convertEntityToDto(user));
 
 
-				// Return if user is created is successfully
-				return new ResponseEntity<String>(
-						constructResponse(Constants.STATUS_SUCCESS, HttpStatus.CREATED.value(), dataNode, null),
-						HttpStatus.CREATED);
-			}
-//       Modify JsonNode for response
-			((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR.name());
-			// Return Internal Server error response
-			return new ResponseEntity<String>(constructResponse(Constants.STATUS_ERROR,
-					HttpStatus.INTERNAL_SERVER_ERROR.value(), null, errorNode), HttpStatus.OK);
-		}
+            // Return if user is created is successfully
+            return new ResponseEntity<String>(
+                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.CREATED.value(), dataNode, null),
+                    HttpStatus.CREATED);
+            //       Modify JsonNode for response
+        }
 		// Modify JsonNode for response
 		((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_FIELD, Constants.USERNAME_FIELD);
 		((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.USERNAME_ALREADY_EXISTS);

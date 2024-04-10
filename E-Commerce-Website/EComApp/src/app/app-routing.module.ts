@@ -35,8 +35,8 @@ const routes: Routes = [
           }
       },
     { path: 'dashboard', component: DashboardComponent },
-    { path: 'auth/login', component: LoginComponent },
-    { path: 'auth/signup', component: SignupComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'signup', component: SignupComponent },
     // { path: 'products', component: ProductDetailsComponent, canActivate: [UserGuard], data: {roles:["User"]}}
     {path: 'products',component:ProductDetailsComponent},
     {path: 'orderConfirm', component: OrderConfirmationComponent, canActivate: [UserGuard], data: {roles:["User"]}}

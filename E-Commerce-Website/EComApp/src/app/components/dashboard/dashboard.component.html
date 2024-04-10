@@ -64,7 +64,7 @@
                         <mat-card-content>
                             <h3>{{product.pname}}</h3>
                             <h4><strong>Brand:</strong> {{product.brand}}</h4>
-                            <h4><strong>Price:</strong> ${{product.price}}</h4>
+                            <h4><strong>Price:</strong> Rs {{product.price}}</h4>
                         </mat-card-content>
                         <mat-card-actions>
                             <button mat-raised-button color="accent" (click)="viewProduct(product.pid)">View
@@ -84,5 +84,12 @@
                 <mat-spinner diameter="50" *ngIf="showSpinner"></mat-spinner>
             </div>
         </div>
+
+        <div class="text-center mt-5" style="padding-bottom: 100px;" *ngIf="showLoadButton">
+            <button type="button" mat-raised-button color="primary" (click)="loadMoreProduct()"> Load more</button>
+          </div>
+      
+        <div class="mt-5" ></div>
+
     </mat-drawer-content>
 </mat-drawer-container>

@@ -59,12 +59,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Method to logout User
     logoutUser() {
         localStorage.clear();
-        this.router.navigate(['auth/login']);
+        this.router.navigate(['/login']);
     }
 
     // Method to redirect user to login Page
     loginUser() {
-        this.router.navigate(['auth/login']);
+        this.router.navigate(['/login']);
     }
 
     // Method to toggle Sidenav

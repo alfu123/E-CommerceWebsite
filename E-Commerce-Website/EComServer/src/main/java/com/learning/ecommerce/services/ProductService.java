@@ -8,6 +8,9 @@ import com.learning.ecommerce.dto.ProductDto;
 import com.learning.ecommerce.models.Product;
 import com.learning.ecommerce.models.Serviceability;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,39 +35,56 @@ public class ProductService {
 	ProductDtoConverter pdc;
 
 	// Method to return Product or a List of product
-	public ResponseEntity<String> getProduct(Integer pid, String pname, String brand) {
+	public ResponseEntity<String> getProduct(Integer pid, String pname, String brand, Integer page) {
 		JsonNode errorNode = objMapper.createObjectNode();
 		JsonNode dataNode = objMapper.createObjectNode();
+		// Create Pageable object for pagination
+		Pageable pageable = PageRequest.of(page,12);
+		// Initialize a Page object to store the paginated results
+		Page<Product> productPage;
 
 		// Initiate a new ArrayList of Products
-		List<Product> products = new ArrayList<>();
+//		List<Product> products = new ArrayList<>();
 
 		// Check and Add products in ArrayList with given parameters
 		if (pid != null && pname != null && brand != null) {
-			products.addAll(productDao.findByPidOrPnameOrBrand(pid, pname, brand));
+
+			productPage= productDao.findByPidOrPnameOrBrand(pid, pname, brand,pageable);
+//			products.addAll(productDao.findByPidOrPnameOrBrand(pid, pname, brand,pageable));
 		} else if (pid != null && pname != null) {
-			products.addAll(productDao.findByPidOrPname(pid, pname));
+			productPage=productDao.findByPidOrPname(pid, pname,pageable);
+//			products.addAll(productDao.findByPidOrPname(pid, pname,pageable));
 		} else if (pid != null && brand != null) {
-			products.addAll(productDao.findByPidOrBrand(pid, brand));
+			productPage=productDao.findByPidOrBrand(pid, brand,pageable);
+//			products.addAll(productDao.findByPidOrBrand(pid, brand,pageable));
 		} else if (pname != null && brand != null) {
-			products.addAll(productDao.findByPnameOrBrand(pname, brand));
+			productPage=productDao.findByPnameOrBrand(pname, brand,pageable);
+//			products.addAll(productDao.findByPnameOrBrand(pname, brand,pageable));
 		} else if (pid != null) {
 			Product product = productDao.findById(pid).orElse(null);
-			if (product != null)
-				products.add(product);
+			if (product != null) {
+				productPage = productDao.findByPid(pid, pageable);
+//				products.add(productDao.findById(pid,pageable));
+			}
+			else {
+				productPage = Page.empty(); // Empty page if product not found
+			}
 		} else if (pname != null) {
-			products.add(productDao.findByPname(pname));
+			productPage=productDao.findByPname(pname,pageable);
+//			products.add(productDao.findByPname(pname,pageable));
 		} else if (brand != null) {
-			products.addAll(productDao.findByBrand(brand));
+			productPage=productDao.findByBrand(brand,pageable);
+//			products.addAll(productDao.findByBrand(brand,pageable));
 		} else {
-			products.addAll(productDao.findAll());
+			productPage=productDao.findAll(pageable);
+//			products.addAll(productDao.findAll(pageable));
 		}
 
 		// Check if products exists in ArrayList
-		if (products.size() > 0) {
+		if (productPage.hasContent()) {
 			// Map Product into JsonNode
 			dataNode = objMapper
-					.valueToTree(products.stream().map(x -> pdc.convertEntityToDto(x)).collect(Collectors.toList()));
+					.valueToTree(productPage.getContent().stream().map(x -> pdc.convertEntityToDto(x)).collect(Collectors.toList()));
 			// Return Success Response
 			return new ResponseEntity<String>(
 					constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNode, null), HttpStatus.OK);
@@ -142,25 +162,7 @@ public class ProductService {
 		return "Product Already Exists";
 	}
 
-	// Method to construct response
-	public String constructResponse(String status, int statusCode, JsonNode dataNode, JsonNode errorNode) {
-		String response = "";
 
-		// Create a new Empty Object Node
-		ObjectNode objNode = objMapper.createObjectNode();
-		objNode.put(Constants.RESPONSE_STATUS, status);
-		objNode.put(Constants.RESPONSE_STATUS_CODE, statusCode);
-		objNode.set(Constants.RESPONSE_DATA_STRING, dataNode);
-		objNode.set(Constants.RESPONSE_ERRORS, errorNode);
-
-		try {
-			response = objMapper.writeValueAsString(objNode);
-		} catch (JsonProcessingException e) {
-			response = null;
-		}
-
-		return response;
-	}
 
 	public ResponseEntity<String> getProductDetails(boolean isSingleProductCheckout, Integer productId) {
 
@@ -198,5 +200,25 @@ public class ProductService {
 		return new ResponseEntity<String>(
 				constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
 				HttpStatus.OK);
+	}
+
+	// Method to construct response
+	public String constructResponse(String status, int statusCode, JsonNode dataNode, JsonNode errorNode) {
+		String response = "";
+
+		// Create a new Empty Object Node
+		ObjectNode objNode = objMapper.createObjectNode();
+		objNode.put(Constants.RESPONSE_STATUS, status);
+		objNode.put(Constants.RESPONSE_STATUS_CODE, statusCode);
+		objNode.set(Constants.RESPONSE_DATA_STRING, dataNode);
+		objNode.set(Constants.RESPONSE_ERRORS, errorNode);
+
+		try {
+			response = objMapper.writeValueAsString(objNode);
+		} catch (JsonProcessingException e) {
+			response = null;
+		}
+
+		return response;
 	}
 }

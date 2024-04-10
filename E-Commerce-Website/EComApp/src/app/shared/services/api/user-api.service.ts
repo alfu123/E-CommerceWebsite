@@ -29,7 +29,7 @@ export class UserApiService {
     }
     // Signup User
     signupUser(object: Object) {
-        return this.httpClient.post<ApiResponseModel>(`${this.baseApiUrl}/auth/signup`, object);
+        return this.httpClient.post<ApiResponseModel>(`${this.baseApiUrl}/auth/signup`, object,{headers:this.requestHeader});
     }
 
     forUser() {

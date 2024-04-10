@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     pricePanelOpen = true;
     brandPanelOpen = false;
 
+    pageNumber:number=0;
     subscriptions: Subscription[] = [];
     results: ApiResponseModel;
     products: ProductModel[] = [];
@@ -45,6 +46,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     showDrawer: boolean = false;
     showSpinner: boolean = false;
     productName: string = '';
+    showLoadButton:boolean=false;
+    resp: any;
 
     constructor(private productService: ProductService, private dataService: DataService, private router: Router,private userService:UserApiService) {
         this.results = { status: '', status_code: 0, data: [] };
@@ -61,20 +64,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Get All Products
     fetchAllProducts() {
         this.showSpinner = true;
-        this.subscriptions.push(this.productService.getAllProducts().subscribe({
+        this.subscriptions.push(this.productService.getAllProducts(this.pageNumber).subscribe({
             next: (resp) => {
                 if (resp) {
                     this.results = resp;
-                    if (resp.data.length > 0) {
-                        this.products = resp.data;
-                        this.filteredProducts = this.products;
-                        this.updateFilters();
-                    } else {
-                        alert("No Product Found!");
-                    }
+                    console.log(this.results.data.length);
+                    if (resp.data.length == 12) {
+                        
+                        // this.products = resp.data;
+                        this.showLoadButton=true;
+                        // this.filteredProducts = this.products;
+                        // this.updateFilters();
+                        
+                    } 
+                    else {
+                        
+                        // alert("No Product Found!");
+                        this.showLoadButton=false;
+                    } 
+                    this.products = resp.data;
+                    this.filteredProducts = this.products;
+                    this.updateFilters();
+                    this.resp.data.forEach((p: ProductModel) =>this.products.push(p)); 
+                    
                 } else {
                     alert("Some Error Occurred!");
                 }
+                
             },
             error: (err) => {
                 console.error(err);
@@ -150,6 +166,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
             return;
         });
     }
+    // Load other next Item
+    public loadMoreProduct() {
+        this.pageNumber = this.pageNumber + 1;
+        this.fetchAllProducts();
+      }
 
     // Navigate to view product details
     viewProduct(pid: number) {

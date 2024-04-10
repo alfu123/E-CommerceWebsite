@@ -21,9 +21,9 @@ public class ProductController {
 
 	@GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> getProduct(@RequestParam(required = false) Integer pid,
-			@RequestParam(required = false) String pname, @RequestParam(required = false) String brand) {
+			@RequestParam(required = false) String pname, @RequestParam(required = false) String brand,@RequestParam(defaultValue = "0") int pageNumber) {
 
-		return productService.getProduct(pid, pname, brand);
+		return productService.getProduct(pid, pname, brand,pageNumber);
 	}
 
 	@GetMapping(value = "/product", produces = MediaType.APPLICATION_JSON_VALUE)
