@@ -1,6 +1,7 @@
 import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { error } from 'console';
 import { Subscription } from 'rxjs';
 import { ApiResponseModel } from 'src/app/shared/models/api-response';
 import { AvailabilityResponseModel } from 'src/app/shared/models/availability-response';
@@ -120,6 +121,18 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
             )
         }
     }
+
+    addToCart(productId:any){
+        this.productService.addToCart(productId).subscribe(
+            (response)=>{
+                console.log(response);
+            },
+            (error)=>{
+                console.log(error);
+            }
+        );
+    }
+
     buyProduct(productId: any) {
         console.log(productId);
         if(this.userAuthService.isUser()){

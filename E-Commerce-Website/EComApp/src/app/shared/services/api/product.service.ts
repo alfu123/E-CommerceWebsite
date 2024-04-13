@@ -40,4 +40,7 @@ export class ProductService {
     placeOrder(orderDetails:OrderDetails){
         return this.httpClient.post(`${this.baseApiUrl}/order/placeOrder`,orderDetails);
     }
+    addToCart(productId:any){
+        return this.httpClient.get(`${this.baseApiUrl}cart/addToCart/`+productId);
+    }
 }

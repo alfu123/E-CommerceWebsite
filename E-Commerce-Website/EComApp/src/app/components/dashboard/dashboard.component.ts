@@ -68,24 +68,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
             next: (resp) => {
                 if (resp) {
                     this.results = resp;
-                    console.log(this.results.data.length);
-                    if (resp.data.length == 12) {
-                        
-                        // this.products = resp.data;
-                        this.showLoadButton=true;
-                        // this.filteredProducts = this.products;
-                        // this.updateFilters();
-                        
+                    if (resp.data.length<12) {
+                        this.showLoadButton=false;   
                     } 
                     else {
-                        
-                        // alert("No Product Found!");
-                        this.showLoadButton=false;
+                        this.showLoadButton=true;
                     } 
-                    this.products = resp.data;
+                    this.products = [...this.products,...resp.data];
                     this.filteredProducts = this.products;
-                    this.updateFilters();
-                    this.resp.data.forEach((p: ProductModel) =>this.products.push(p)); 
+                    this.updateFilters();     
                     
                 } else {
                     alert("Some Error Occurred!");

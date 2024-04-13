@@ -1,5 +1,6 @@
 package com.learning.ecommerce.converters;
 
+import java.text.ParseException;
 import java.util.stream.Collectors;
 
 import com.learning.ecommerce.dto.ProductDto;
@@ -39,7 +40,13 @@ public class ProductDtoConverter {
 		ServiceabilityDtoConverter serviceabilityDtoConverter = new ServiceabilityDtoConverter();
 
 		product.setServiceability(productDto.getServiceability().stream()
-				.map((x) -> serviceabilityDtoConverter.convertDtoToEntity(x)).collect(Collectors.toList()));
+				.map((x) -> {
+					try {
+						return serviceabilityDtoConverter.convertDtoToEntity(x);
+					} catch (ParseException e) {
+						throw new RuntimeException(e);
+					}
+				}).collect(Collectors.toList()));
 
 		return product;
 	}

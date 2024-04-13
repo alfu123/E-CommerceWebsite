@@ -53,7 +53,9 @@
 
                                     <button mat-raised-button class="availabilityBtn" type="submit"
                                         color="accent">Submit</button>
-                                    <button mat-raised-button *ngIf="isProductServiceable" class="buyProductBtn" (click)="buyProduct(productResponse.data[0].pid)" type="button" color="primary">Buy Product</button>
+                                    <button mat-raised-button *ngIf="isProductServiceable" class="buyProductBtn" (click)="buyProduct(productResponse.data[0].pid)" type="button" color="primary">Buy Now</button>
+                                    &nbsp;
+                                    <button mat-raised-button *ngIf="isProductServiceable" class="buyProductBtn" (click)="addToCart(productResponse.data[0].pid)" type="button" color="accent">Add to Cart</button>
                                 </div>
                             </div>
                         </form>
