@@ -87,6 +87,7 @@ public class AuthService {
 		userRoles.add(userRole);
 		user.setRole(userRoles);
 		userDao.save(userDtoConverter.convertDtoToEntity(user));
+
 	}
 
 	public ResponseEntity<String> registerNewUser(UserDto userDto) {

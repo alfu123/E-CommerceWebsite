@@ -17,6 +17,8 @@ import com.learning.ecommerce.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CartService {
     @Autowired
@@ -47,5 +49,16 @@ public class CartService {
         cartDto.setUserDto(userDtoConverter.convertEntityToDto(user));
         return objectMapper.writeValueAsString(cartDao.save(cartDtoConverter.convertDtoToEntity(cartDto)));
 
+    }
+
+    public List<Cart> getCartDetails() {
+        String username = JwtRequestFilter.CURRENT_USER;
+        User user = userDao.findByUserName(username);
+        return cartDao.findByUser(user);
+
+    }
+
+    public void deleteCartItem(Integer cartId) {
+        cartDao.deleteById(cartId);
     }
 }

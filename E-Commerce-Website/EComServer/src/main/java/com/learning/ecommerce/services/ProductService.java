@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.learning.ecommerce.Configuration.JwtRequestFilter;
+import com.learning.ecommerce.dao.CartDao;
+import com.learning.ecommerce.dao.UserDao;
 import com.learning.ecommerce.dto.ProductDto;
+import com.learning.ecommerce.models.Cart;
 import com.learning.ecommerce.models.Product;
 import com.learning.ecommerce.models.Serviceability;
+import com.learning.ecommerce.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +35,10 @@ public class ProductService {
 
 	@Autowired
 	ProductDao productDao;
-
+	@Autowired
+	private UserDao userDao;
+	@Autowired
+	private CartDao cartDao;
 	@Autowired
 	ProductDtoConverter pdc;
 
@@ -178,7 +186,7 @@ public class ProductService {
 		JsonNode errorNode = objMapper.createObjectNode();
 		JsonNode dataNode = objMapper.createObjectNode();
 		List<Product> list = new ArrayList<>();
-		if(isSingleProductCheckout){
+		if(isSingleProductCheckout && productId!=null){
 
 			Product product = productDao.findById(productId).get();
 			list.add(product);
@@ -195,11 +203,24 @@ public class ProductService {
 					constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
 					HttpStatus.OK);
 		}
-		((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.NO_PRODUCT_FOUND);
-		// Return Error Response
-		return new ResponseEntity<String>(
-				constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
-				HttpStatus.OK);
+		else{
+			String username= JwtRequestFilter.CURRENT_USER;
+			User user=userDao.findByUserName(username);
+			List<Cart> carts=cartDao.findByUser(user);
+
+			if(carts.size()>0){
+				dataNode=objMapper.valueToTree(carts.stream().map(Cart::getProduct).collect(Collectors.toList()));
+
+				return new ResponseEntity<String>(constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNode, null)
+						, HttpStatus.OK);
+			}
+			((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.NO_PRODUCT_FOUND);
+			// Return Error Response
+			return new ResponseEntity<String>(
+					constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
+					HttpStatus.OK);
+		}
+
 	}
 
 	// Method to construct response

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
@@ -20,4 +22,15 @@ public class CartController {
         return cartService.addToCart(productId);
     }
 
+    @PreAuthorize("hasRole('User')")
+    @DeleteMapping({"/deleteCartItem/{cartId}"})
+    public void deleteCartItem(@PathVariable(name = "cartId") Integer cartId) {
+        cartService.deleteCartItem(cartId);
+    }
+
+    @PreAuthorize("hasRole('User')")
+    @GetMapping({"/getCartDetails"})
+    public List<Cart> getCartDetails() {
+        return cartService.getCartDetails();
+    }
 }

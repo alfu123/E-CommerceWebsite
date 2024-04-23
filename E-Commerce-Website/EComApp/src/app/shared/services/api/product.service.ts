@@ -41,6 +41,12 @@ export class ProductService {
         return this.httpClient.post(`${this.baseApiUrl}/order/placeOrder`,orderDetails);
     }
     addToCart(productId:any){
-        return this.httpClient.get(`${this.baseApiUrl}cart/addToCart/`+productId);
+        return this.httpClient.get(`${this.baseApiUrl}/cart/addToCart/`+productId);
+    }
+    getCartDetails(){
+        return this.httpClient.get(`${this.baseApiUrl}/cart/getCartDetails`);
+    }
+    deleteCartItems(cartId:any){
+        return this.httpClient.delete(`${this.baseApiUrl}/cart/deleteCartItem/`+cartId);
     }
 }
