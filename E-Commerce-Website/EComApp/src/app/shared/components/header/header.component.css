@@ -13,3 +13,11 @@
 .app-name{
     cursor: pointer;
 }
+.cart-text{
+    cursor: pointer;
+    margin-right: 1em;
+}
+.icon-size{
+    size: 5px;
+    padding-top: 5px;
+}

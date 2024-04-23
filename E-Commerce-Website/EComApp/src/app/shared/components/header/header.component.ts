@@ -11,6 +11,7 @@ import { UserApiService } from '../../services/api/user-api.service';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+
     showDrawer: boolean = false;
     showDrawerBtn: boolean = false;
     subscriptions: Subscription[] = [];
@@ -54,6 +55,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Method to navigate to home 
     navigateToHome() {
         this.router.navigate(['/']);
+    }
+    navigateToCart(){
+        this.router.navigate(['/cart']);
     }
 
     // Method to logout User

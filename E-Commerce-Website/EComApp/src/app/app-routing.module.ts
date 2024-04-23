@@ -11,6 +11,7 @@ import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 import { BuyProductComponent } from './components/buy-product/buy-product.component';
 import { BuyProductResolverService } from './shared/services/api/buy-product-resolver.service';
 import { OrderConfirmationComponent } from './components/order-confirmation/order-confirmation.component';
+import { CartComponent } from './components/cart/cart.component';
 
 
 const routes: Routes = [
@@ -25,6 +26,12 @@ const routes: Routes = [
       {
         path: "user",
         component: UserComponent,
+        canActivate: [UserGuard],
+        data: { roles: ["User"] },
+      },
+      {
+        path: "cart",
+        component: CartComponent,
         canActivate: [UserGuard],
         data: { roles: ["User"] },
       },

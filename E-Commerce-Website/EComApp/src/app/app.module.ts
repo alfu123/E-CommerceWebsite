@@ -36,6 +36,8 @@ import { UserGuard } from './shared/gaurds/user.guard';
 import { AuthInterceptor } from './shared/gaurds/auth.interceptor';
 import { UserApiService } from './shared/services/api/user-api.service';
 import { OrderConfirmationComponent } from './components/order-confirmation/order-confirmation.component';
+import { CartComponent } from './components/cart/cart.component';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
     declarations: [
@@ -49,7 +51,8 @@ import { OrderConfirmationComponent } from './components/order-confirmation/orde
         UserComponent,
         ForbiddenComponent,
         BuyProductComponent,
-        OrderConfirmationComponent
+        OrderConfirmationComponent,
+        CartComponent
     ],
     imports: [
         BrowserModule,
@@ -71,7 +74,8 @@ import { OrderConfirmationComponent } from './components/order-confirmation/orde
         MatExpansionModule,
         MatCheckboxModule,
         MatProgressSpinnerModule,
-        FormsModule
+        FormsModule,
+        MatTableModule
     ],
     providers: [UserGuard,
         {

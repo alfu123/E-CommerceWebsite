@@ -72,7 +72,6 @@ export class BuyProductComponent implements OnInit {
         x => this.orderDetails.orderProductQuantityList.push(
           { productId: x.pid, quantity: 1 }
         ),
-
       );
     }
     else{
