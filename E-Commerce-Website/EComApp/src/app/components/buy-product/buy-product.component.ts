@@ -19,7 +19,7 @@ import { ProductService } from 'src/app/shared/services/api/product.service';
 })
 export class BuyProductComponent implements OnInit {
 
-  // expectedDel:any | undefined;
+  expectedDel:any | undefined;
   pid: number | undefined;
   productDetails: ProductModel[] = [];
   subscriptions: Subscription[] = [];
@@ -35,7 +35,7 @@ export class BuyProductComponent implements OnInit {
     // transactionId: '',
     orderProductQuantityList: []
   }
-  isSingleProductCheckout: string = '';
+  isSingleProductCheckout: string |null = '';
   showProductSpinner: boolean = false;
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -48,25 +48,26 @@ export class BuyProductComponent implements OnInit {
   ngOnInit(): void {
     this.showProductSpinner = true;
     this.productResponse = this.activatedRoute.snapshot.data['productDetails'];
+    this.isSingleProductCheckout=this.activatedRoute.snapshot.paramMap.get("isSingleProductCheckout");
     
     if (this.productResponse ) {
-      // this.productDetails = this.productResponse.data;
+      this.productDetails = this.productResponse.data;
       
-      // this.expectedDel=this.productResponse.data[0].serviceability[0].expectedDelivery;
-      // this.productResponse.data.forEach(product => {
-      //   // Iterate over each serviceability model of the product
-      //   product.serviceability.forEach(serviceability => {
-      //     // Compare expected delivery with current maximum
-      //     if (serviceability.expectedDelivery > this.expectedDel) {
-      //       this.expectedDel = serviceability.expectedDelivery;
-      //     }
-      //   });
-      // });
+      this.expectedDel=this.productResponse.data[0].serviceability[0].expectedDelivery;
+      this.productResponse.data.forEach(product => {
+        // Iterate over each serviceability model of the product
+        product.serviceability.forEach(serviceability => {
+          // Compare expected delivery with current maximum
+          if (serviceability.expectedDelivery > this.expectedDel) {
+            this.expectedDel = serviceability.expectedDelivery;
+          }
+        });
+      });
       
 
 
       // this.serviceabilityRes=this.productResponse.data[0].serviceability;
-
+      console.log(this.productDetails[0].pname);
       this.productDetails.forEach(
 
         x => this.orderDetails.orderProductQuantityList.push(
@@ -88,10 +89,9 @@ export class BuyProductComponent implements OnInit {
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => { subscription.unsubscribe });
   }
+
   public placeOrder(orderForm: NgForm) {
-    
-    
-    this.productService.placeOrder(this.orderDetails).subscribe(
+    this.productService.placeOrder(this.orderDetails,this.isSingleProductCheckout).subscribe(
       (resp: any) => {
         console.log(resp);
         orderForm.reset();
@@ -99,7 +99,7 @@ export class BuyProductComponent implements OnInit {
         const ngZone = this.injector.get(NgZone);
         ngZone.run(
           () => {
-            this.router.navigate(["/orderConfirm",{
+            this.router.navigate(["/orderConfirm",{expectedDel:this.expectedDel
 
             }]);
           }

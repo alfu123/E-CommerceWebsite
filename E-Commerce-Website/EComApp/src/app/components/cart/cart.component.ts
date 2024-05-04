@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ProductService } from 'src/app/shared/services/api/product.service';
 
 @Component({
@@ -10,8 +11,13 @@ import { ProductService } from 'src/app/shared/services/api/product.service';
 export class CartComponent implements OnInit {
 
   displayedColumns: string[] = ['Name', 'Description', 'Price', 'Action'];
-
+  subscriptions: Subscription[] = [];
   cartDetails= [];
+  totalPrice: number=0;
+  productCount: number=0;
+  showProductSpinner: boolean = false;
+
+  panelOpenState = false;
 
   constructor(private productService:ProductService, private router:Router) { }
 
@@ -32,15 +38,37 @@ export class CartComponent implements OnInit {
   }
 
   getCartDetails() {
-    this.productService.getCartDetails().subscribe(
+    this.showProductSpinner=true;
+    this.subscriptions.push(this.productService.getCartDetails().subscribe(
       (response:any) => {
         console.log(response);
         this.cartDetails = response;
+
+        response.forEach((cartItem: any) => {
+          
+          // Access the product object within the cart item
+          const product = cartItem.product;
+  
+          // Access the price property from the product object
+          const productPrice = product.price;
+          this.totalPrice+=productPrice;
+          this.productCount++;
+          // console.log("Product Price:", productPrice);
+  
+          // Do something with the product price if needed
+        });
+        console.log(this.totalPrice);
+        console.log(this.productCount);
+        
       },
       (error) => {
         console.log(error);
+      },
+      ()=>{
+        this.showProductSpinner=false;
       }
-    );
+      
+    ));
   }
 
   checkout() {
@@ -48,6 +76,10 @@ export class CartComponent implements OnInit {
     this.router.navigate(['/buyProduct', {
       isSingleProductCheckout: false, id: 0
     }]);
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => { subscription.unsubscribe });
   }
 
 }

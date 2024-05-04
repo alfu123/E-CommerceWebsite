@@ -20,8 +20,8 @@ public class OrderDetailsController {
         return orderDetailService.createTransaction(amount);
     }
     @PreAuthorize("hasRole('User')")
-    @PostMapping({"/placeOrder"})
-    public ResponseEntity<String> createOrder(@RequestBody OrderInputDto orderInputDto) throws JsonProcessingException {
-        return orderDetailService.placedOrder(orderInputDto);
+    @PostMapping({"/placeOrder/{isCartCheckout}"})
+    public ResponseEntity<String> createOrder(@PathVariable boolean isCartCheckout,@RequestBody OrderInputDto orderInputDto) throws JsonProcessingException {
+        return orderDetailService.placedOrder(orderInputDto,isCartCheckout);
     }
 }

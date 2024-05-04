@@ -3,10 +3,12 @@ package com.learning.ecommerce.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.learning.ecommerce.Configuration.JwtRequestFilter;
 import com.learning.ecommerce.constants.Constants;
 import com.learning.ecommerce.converters.DateConverter;
+import com.learning.ecommerce.dao.CartDao;
 import com.learning.ecommerce.dao.OrderDetailDao;
 import com.learning.ecommerce.dao.ProductDao;
 import com.learning.ecommerce.dao.UserDao;
@@ -14,10 +16,7 @@ import com.learning.ecommerce.dto.OrderDetailDto;
 import com.learning.ecommerce.dto.OrderInputDto;
 import com.learning.ecommerce.dto.OrderProductQuantityDto;
 import com.learning.ecommerce.dto.TransactionDetailsDto;
-import com.learning.ecommerce.models.OrderDetail;
-import com.learning.ecommerce.models.Product;
-import com.learning.ecommerce.models.Serviceability;
-import com.learning.ecommerce.models.User;
+import com.learning.ecommerce.models.*;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import org.json.JSONObject;
@@ -45,21 +44,33 @@ public class OrderDetailService {
     private ProductDao productDao;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private CartDao cartDao;
 
-
-    public ResponseEntity<String> placedOrder(OrderInputDto orderInputDto) throws JsonProcessingException {
+    public ResponseEntity<String> placedOrder(OrderInputDto orderInputDto, boolean isCartCheckout) throws JsonProcessingException {
         JsonNode errorNode = objMapper.createObjectNode();
         JsonNode dataNode = objMapper.createObjectNode();
 
+        List<OrderDetail> orderDetails=new ArrayList<>();
+        List<Product> productNotDeleiver=new ArrayList<>();
+        int expectedDel=0;
         List<OrderProductQuantityDto> productQuantityList=orderInputDto.getOrderProductQuantityList();
         for(OrderProductQuantityDto pr: productQuantityList){
             Product product=productDao.findById(pr.getProductId()).get();
             String currentUser= JwtRequestFilter.CURRENT_USER;
             User user=userDao.findByUserName(currentUser);
             orderInputDto.getPincode();
-            Serviceability serviceability = product.getServiceability().stream()
-                    .filter(x -> (x.getPincode() == orderInputDto.getPincode())).findAny().orElse(null);
+//            Serviceability serviceability = product.getServiceability().stream()
+//                    .filter(x -> (x.getPincode() == orderInputDto.getPincode())).findAny().orElse(null);
 
+            List<Serviceability>  serviceabilityList=product.getServiceability();
+            Serviceability serviceability=null;
+            for(Serviceability ser:serviceabilityList){
+                if(ser.getPincode()==orderInputDto.getPincode()){
+                    expectedDel=Math.max(expectedDel,ser.getExpectedDelivery());
+                    serviceability=ser;
+                }
+            }
             if(serviceability!=null) {
                 OrderDetail orderDetail = new OrderDetail(
                         orderInputDto.getFullName(),
@@ -71,30 +82,60 @@ public class OrderDetailService {
                         orderInputDto.getPincode(),
                         product, user
                 );
-                dataNode= objMapper.valueToTree(orderDetail);
-                ((ObjectNode) dataNode).put(Constants.AVAILABILITY_FIELD, true);
-                ((ObjectNode) dataNode).put(Constants.DELIVERY_DATE_FIELD,
-                        DateConverter.covertDaysIntoDate(serviceability.getExpectedDelivery()));
+                orderDetails.add(orderDetail);
+                if(!isCartCheckout){
+                    List<Cart> carts=cartDao.findByUser(user);
+                    for(Cart cart:carts){
+                        if(cart.getProduct().getPid()==product.getPid()){
+                            cartDao.deleteById(cart.getCartId());
+                        }
+                    }
+//                    carts.stream().forEach(x->cartDao.deleteById(x.getCartId()));
+                }
                 orderDetailDao.save(orderDetail);
-                return new ResponseEntity<String>(
-                        constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNode, null),
-                        HttpStatus.OK);
-
             }
-            ((ObjectNode) dataNode).put(Constants.PID_FIELD, product.getPid());
-            ((ObjectNode) dataNode).put(Constants.PINCODE_FIELD, orderInputDto.getPincode());
-            ((ObjectNode) dataNode).put(Constants.AVAILABILITY_FIELD, false);
+            else{
+                productNotDeleiver.add(product);
+            }
 
-            // return success response with availability false
-            return new ResponseEntity<String>(
-                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNode, null), HttpStatus.OK);
+
         }
-        ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_FIELD, Constants.PID_FIELD);
-        ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.NO_PRODUCT_FOUND);
+        if(orderDetails.size()>0){
+            dataNode= objMapper.valueToTree(orderDetails);
+            ArrayNode dataNodeArray = (ArrayNode) dataNode; // Cast to ArrayNode
+
+            // Iterate over each element of the array
+            for (JsonNode orderDetail : dataNodeArray) {
+                // Add additional fields to each element of the array
+                ((ObjectNode) orderDetail).put(Constants.AVAILABILITY_FIELD, true);
+                ((ObjectNode) orderDetail).put(Constants.DELIVERY_DATE_FIELD, DateConverter.covertDaysIntoDate(expectedDel));
+            }
+
+//            dataNode= objMapper.valueToTree(orderDetails);
+//            ((ObjectNode) dataNode).put(Constants.AVAILABILITY_FIELD, true);
+//            ((ObjectNode) dataNode).put(Constants.DELIVERY_DATE_FIELD,
+//                    DateConverter.covertDaysIntoDate(expectedDel));
+
+            return new ResponseEntity<String>(
+                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNodeArray, null),
+                    HttpStatus.OK);
+        }
+        else{
+            ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_FIELD, Constants.PID_FIELD);
+            ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.NO_PRODUCT_FOUND);
         // Return Error Response with Product Not Found
-        return new ResponseEntity<String>(
+            return new ResponseEntity<String>(
                 constructResponse(Constants.STATUS_SUCCESS, HttpStatus.NOT_FOUND.value(), null, errorNode),
                 HttpStatus.OK);
+
+
+//            ((ObjectNode) dataNode).put(Constants.PINCODE_FIELD, orderInputDto.getPincode());
+//            ((ObjectNode) dataNode).put(Constants.AVAILABILITY_FIELD, false);
+//
+//            // return success response with availability false
+//            return new ResponseEntity<String>(
+//                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNode, null), HttpStatus.OK);
+        }
     }
 
     public List<OrderDetail> getAllOrderDetails(String status) {
@@ -142,7 +183,7 @@ public class OrderDetailService {
         return transactionDetailsDto;
     }
 
-    public String constructResponse(String status, int statusCode, JsonNode dataNode, JsonNode errorNode) {
+    public String constructResponse(String status, int statusCode, ArrayNode dataNode, JsonNode errorNode) {
         String response = "";
 
         // Create a new Empty Object Node
