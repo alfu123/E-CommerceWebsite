@@ -26,5 +26,7 @@ public class Constants {
 	public static String USERNAME_ALREADY_EXISTS = "Username Already Exists!";
 	public static String INCORRECT_PASSWORD = "Incorrect Password!";
 	public static String NO_PRODUCT_FOUND = "No Product Found!";
+
+	public static String N0_ORDER_FOUND ="No Order Found";
 	
 }

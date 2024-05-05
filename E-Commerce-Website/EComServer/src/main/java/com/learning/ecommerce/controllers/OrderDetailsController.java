@@ -24,4 +24,21 @@ public class OrderDetailsController {
     public ResponseEntity<String> createOrder(@PathVariable boolean isCartCheckout,@RequestBody OrderInputDto orderInputDto) throws JsonProcessingException {
         return orderDetailService.placedOrder(orderInputDto,isCartCheckout);
     }
+    @PreAuthorize("hasRole('User')")
+    @GetMapping({"/getOrderDetails"})
+    public ResponseEntity<String> getMyOrder(){
+
+        return orderDetailService.getMyOrder();
+    }
+    @PreAuthorize("hasRole('Admin')")
+    @GetMapping({"/getAllOrderDetails/{status}"})
+    public ResponseEntity<String> getAllOrder(@PathVariable String status){
+        return orderDetailService.getAllOrderDetails(status);
+    }
+    @PreAuthorize("hasRole('Admin')")
+    @GetMapping({"/markOrderAsDeliver/{orderId}"})
+    public ResponseEntity<String> markOrderAsDeliver(@PathVariable Integer orderId){
+        return orderDetailService.markOrderAsDeliver(orderId);
+
+    }
 }

@@ -5,6 +5,8 @@ import { ApiResponseModel } from '../../models/api-response';
 import { AvailabilityResponseModel } from '../../models/availability-response';
 import { ProductModel } from '../../models/product';
 import { OrderDetails } from '../../models/order-details';
+import { MyOrderComponent } from 'src/app/my-order/my-order.component';
+import { OrderApiResponseModel } from '../../models/order-api-response';
 
 @Injectable({
     providedIn: 'root'
@@ -48,5 +50,14 @@ export class ProductService {
     }
     deleteCartItems(cartId:any){
         return this.httpClient.delete(`${this.baseApiUrl}/cart/deleteCartItem/`+cartId);
+    }
+    getMyOrder(){
+        return this.httpClient.get<OrderApiResponseModel>(`${this.baseApiUrl}/order/getOrderDetails`);
+    }
+    getAllOrder(status:string){
+        return this.httpClient.get<OrderApiResponseModel>(`${this.baseApiUrl}/order/getAllOrderDetails/`+status);
+    }
+    markAsDeliver(orderId:string){
+        return this.httpClient.get<OrderApiResponseModel>(`${this.baseApiUrl}/order/markOrderAsDeliver/`+orderId);
     }
 }

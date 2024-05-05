@@ -38,6 +38,9 @@ public class OrderDetail {
 
     }
 
+    public OrderDetail() {
+    }
+
     public Integer getOrderId() {
         return orderId;
     }

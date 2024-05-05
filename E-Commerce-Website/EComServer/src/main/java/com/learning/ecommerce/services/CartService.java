@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -40,12 +41,19 @@ public class CartService {
     public String addToCart(Integer productId) throws JsonProcessingException {
         Product product=productDao.findById(productId).orElse(null);
         CartDto cartDto=new CartDto();
-        if(product!=null){
-            cartDto.setProductDto(productDtoConverter.convertEntityToDto(product));
-        }
         User user=null;
         String username = JwtRequestFilter.CURRENT_USER;
         user=userDao.findByUserName(username);
+        List<Cart> cartList=cartDao.findByUser(user);
+        List<Cart> dupList = cartList.stream().filter(x -> x.getProduct().getPid() == product.getPid()).collect(Collectors.toList());
+        if(!dupList.isEmpty()){
+            return "Product already present in cart";
+        }
+
+        if(product!=null){
+            cartDto.setProductDto(productDtoConverter.convertEntityToDto(product));
+        }
+
         cartDto.setUserDto(userDtoConverter.convertEntityToDto(user));
         return objectMapper.writeValueAsString(cartDao.save(cartDtoConverter.convertDtoToEntity(cartDto)));
 

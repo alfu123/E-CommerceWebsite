@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderDetailService {
@@ -100,7 +101,7 @@ public class OrderDetailService {
 
 
         }
-        if(orderDetails.size()>0){
+        if(!orderDetails.isEmpty()){
             dataNode= objMapper.valueToTree(orderDetails);
             ArrayNode dataNodeArray = (ArrayNode) dataNode; // Cast to ArrayNode
 
@@ -138,20 +139,73 @@ public class OrderDetailService {
         }
     }
 
-    public List<OrderDetail> getAllOrderDetails(String status) {
+    public ResponseEntity<String> getMyOrder(){
+        JsonNode errorNode = objMapper.createObjectNode();
+        JsonNode dataNode = objMapper.createObjectNode();
+
+        String username= JwtRequestFilter.CURRENT_USER;
+        User user=userDao.findByUserName(username);
+        List<OrderDetail> orderItems=orderDetailDao.findByUser(user);
+        if(!orderItems.isEmpty()){
+            dataNode=objMapper.valueToTree(orderItems);
+            ArrayNode dataNodeArray= (ArrayNode) dataNode;
+            return new ResponseEntity<String>(
+                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNodeArray, null), HttpStatus.OK);
+        }
+        ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.N0_ORDER_FOUND);
+        // Return Error Response
+        return new ResponseEntity<String>(
+                constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
+                HttpStatus.OK);
+
+
+    }
+
+    public ResponseEntity<String> getAllOrderDetails(String status) {
+        JsonNode errorNode = objMapper.createObjectNode();
+        JsonNode dataNode = objMapper.createObjectNode();
         List<OrderDetail> orderDetails = new ArrayList<>();
 
         if(status.equals("All")) {
-            orderDetailDao.findAll().forEach(
-                    x -> orderDetails.add(x)
-            );
+            orderDetails.addAll(orderDetailDao.findAll());
+
         } else {
-            orderDetailDao.findByOrderStatus(status).forEach(
-                    x -> orderDetails.add(x)
-            );
+            orderDetails.addAll(orderDetailDao.findByOrderStatus(status));
         }
 
-        return orderDetails;
+        if(!orderDetails.isEmpty()){
+            dataNode=objMapper.valueToTree(orderDetails);
+            ArrayNode dataNodeArray= (ArrayNode) dataNode;
+            return new ResponseEntity<String>(
+                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNodeArray, null), HttpStatus.OK);
+        }
+
+        ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.N0_ORDER_FOUND);
+        // Return Error Response
+        return new ResponseEntity<String>(
+                constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
+                HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> markOrderAsDeliver(Integer orderId){
+        JsonNode errorNode = objMapper.createObjectNode();
+        JsonNode dataNode = objMapper.createObjectNode();
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        OrderDetail orderDetail = orderDetailDao.findById(orderId).get();
+        if(orderDetail!=null){
+            orderDetail.setOrderStatus("Delivered");
+            orderDetailDao.save(orderDetail);
+            orderDetails.add(orderDetail);
+            dataNode=objMapper.valueToTree(orderDetails);
+            ArrayNode dataNodeArray= (ArrayNode) dataNode;
+            return new ResponseEntity<String>(
+                    constructResponse(Constants.STATUS_SUCCESS, HttpStatus.OK.value(), dataNodeArray, null), HttpStatus.OK);
+        }
+        ((ObjectNode) errorNode).put(Constants.RESPONSE_ERROR_MESSAGE, Constants.N0_ORDER_FOUND);
+        // Return Error Response
+        return new ResponseEntity<String>(
+                constructResponse(Constants.STATUS_ERROR, HttpStatus.NOT_FOUND.value(), null, errorNode),
+                HttpStatus.OK);
     }
 
 
