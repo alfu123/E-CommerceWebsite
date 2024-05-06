@@ -38,6 +38,9 @@ import { UserApiService } from './shared/services/api/user-api.service';
 import { OrderConfirmationComponent } from './components/order-confirmation/order-confirmation.component';
 import { CartComponent } from './components/cart/cart.component';
 import {MatTableModule} from '@angular/material/table';
+import { MyOrderComponent } from './my-order/my-order.component';
+import { AllOrderComponent } from './components/all-order/all-order.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
     declarations: [
@@ -52,7 +55,9 @@ import {MatTableModule} from '@angular/material/table';
         ForbiddenComponent,
         BuyProductComponent,
         OrderConfirmationComponent,
-        CartComponent
+        CartComponent,
+        MyOrderComponent,
+        AllOrderComponent
     ],
     imports: [
         BrowserModule,
@@ -75,7 +80,8 @@ import {MatTableModule} from '@angular/material/table';
         MatCheckboxModule,
         MatProgressSpinnerModule,
         FormsModule,
-        MatTableModule
+        MatTableModule,
+        MatButtonToggleModule
     ],
     providers: [UserGuard,
         {

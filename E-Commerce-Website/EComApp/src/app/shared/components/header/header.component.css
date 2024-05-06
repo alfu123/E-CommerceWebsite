@@ -21,3 +21,8 @@
     size: 5px;
     padding-top: 5px;
 }
+.order-text{
+    cursor: pointer;
+    margin-right: 1em;
+    
+}

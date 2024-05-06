@@ -126,6 +126,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         this.productService.addToCart(productId).subscribe(
             (response)=>{
                 console.log(response);
+                this.router.navigate(['/cart']);
             },
             (error)=>{
                 console.log(error);

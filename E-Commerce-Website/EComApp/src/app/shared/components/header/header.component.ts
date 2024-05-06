@@ -59,6 +59,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     navigateToCart(){
         this.router.navigate(['/cart']);
     }
+    navigateToOrder(){
+        this.router.navigate(['/myOrder']);
+    }
+    navigateToAllOrder(){
+        this.router.navigate(['/allOrder']);
+    }
 
     // Method to logout User
     logoutUser() {
@@ -87,11 +93,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.router.navigate(['']);
     }
 
-    // public isAdmin() {
-    //     return this.userAuthService.isAdmin();
-    // }
+    public isAdmin() {
+        return this.userAuthService.isAdmin();
+    }
 
-    // public isUser() {
-    //     return this.userAuthService.isUser();
-    // }
+    public isUser() {
+        return this.userAuthService.isUser();
+    }
 }

@@ -12,6 +12,8 @@ import { BuyProductComponent } from './components/buy-product/buy-product.compon
 import { BuyProductResolverService } from './shared/services/api/buy-product-resolver.service';
 import { OrderConfirmationComponent } from './components/order-confirmation/order-confirmation.component';
 import { CartComponent } from './components/cart/cart.component';
+import { MyOrderComponent } from './my-order/my-order.component';
+import { AllOrderComponent } from './components/all-order/all-order.component';
 
 
 const routes: Routes = [
@@ -34,6 +36,18 @@ const routes: Routes = [
         component: CartComponent,
         canActivate: [UserGuard],
         data: { roles: ["User"] },
+      },
+      {
+        path: "myOrder",
+        component: MyOrderComponent,
+        canActivate: [UserGuard],
+        data: { roles: ["User"] },
+      },
+      {
+        path: "allOrder",
+        component: AllOrderComponent,
+        canActivate: [UserGuard],
+        data: { roles: ["Admin"] },
       },
       {
         path: 'buyProduct', component:BuyProductComponent, canActivate: [UserGuard], data: {roles:["User"]},

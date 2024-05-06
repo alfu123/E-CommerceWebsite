@@ -11,8 +11,11 @@
     <!-- Display When User is LoggedIn -->
     <span *ngIf="getUser()">
         <span class="user-text">Hi {{username}}</span>
+
+        <span *ngIf="!isAdmin()" class="order-text" (click)="navigateToOrder()">Orders</span>
+        <span *ngIf="isAdmin()" class="order-text" (click)="navigateToAllOrder()">Orders Info</span>
         
-        <span class="cart-text" (click)="navigateToCart()">
+        <span *ngIf="!isAdmin()" class="cart-text" (click)="navigateToCart()">
             <mat-icon class="icon-size">shopping_cart</mat-icon>Cart</span>
 
         <button mat-raised-button color="warn" (click)="logoutUser()">
